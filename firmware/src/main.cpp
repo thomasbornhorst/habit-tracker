@@ -2,6 +2,7 @@
 #include <Config.h>
 #include "display.h"
 #include "io_control.h"
+#include "request_handler.h"
 using namespace Config;
 
 void setup() {
@@ -11,14 +12,20 @@ void setup() {
     initButtonsAndLEDs();
 
     displayStartupScreen();
+
+    redLED.startBlinking(250, 1000);
 }
 
 void loop() {
     updateButtons();
+    updateLEDs();
 
-    if (isShiftButtonPressed()) {
-        greenLED.turnOn();
-    } else {
-        greenLED.turnOff();
+    if (shouldRefreshData()) {
+        greenLED.startBlinking(250, 5000);
+        refreshData();
+    }
+
+    if (buttonPressedIndex != -1) {
+        Serial.println(buttonPressedIndex);
     }
 }

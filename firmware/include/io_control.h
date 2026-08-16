@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "light.h"
 
+extern int buttonPressedIndex;
 extern Light redLED;
 extern Light greenLED;
 
@@ -11,7 +12,7 @@ void initButtonsAndLEDs();
 
 void updateButtons();
 
-bool isAnyMainButtonNewlyPressed();
+void updateLEDs();
 
 bool isShiftButtonPressed();
 

@@ -13,13 +13,11 @@ namespace {
         Button(BTN4_PIN),
         Button(BTN5_PIN)
     };
-    int numMainButtons = 5;
 
     Button shiftButton = Button(SHIFT_BTN_PIN);
-
-    int buttonPressedIndex;
 }
 
+int buttonPressedIndex;
 Light greenLED = Light(GREEN_LED_PIN);
 Light redLED = Light(RED_LED_PIN);
 
@@ -34,26 +32,28 @@ void initButtonsAndLEDs() {
     redLED.init();
 }
 
+// Updates button states
+// Updates buttonPressedIndex if any main buttons are newly pressed
+// If no main buttons newly pressed, sets buttonPressedIndex to -1
 void updateButtons() {
+    buttonPressedIndex = -1;
+
     for (int i = 0; i < numMainButtons; i++) {
         mainButtons[i].update();
+        if (mainButtons[i].isNewlyPressed()) {
+            buttonPressedIndex = i;
+        }
     }
 
     shiftButton.update();
+    if (buttonPressedIndex != -1 && shiftButton.isPressed()) {
+        buttonPressedIndex += numMainButtons;
+    }
 }
 
-bool isAnyMainButtonNewlyPressed() {
-    bool isAnyButtonPressed = false;
-
-    for (int i = 0; i < numMainButtons; i++) {
-        if (mainButtons[i].isNewlyPressed()) {
-            isAnyButtonPressed = true;
-            buttonPressedIndex = i;
-            break;
-        }
-    }
-    
-    return isAnyButtonPressed;
+void updateLEDs() {
+    greenLED.update();
+    redLED.update();
 }
 
 bool isShiftButtonPressed() {
