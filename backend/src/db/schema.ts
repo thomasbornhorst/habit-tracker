@@ -4,7 +4,9 @@ import { sql } from 'drizzle-orm';
 export const tasks = sqliteTable('tasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   label: text().notNull(),
-  api: text({ enum: ['google-health-cardio', 'google-health-lifting', 'anki-greek'] }),
+  api: text({
+    enum: ['google-health-cardio', 'google-health-lifting', 'anki-greek', 'chores', 'github'],
+  }),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
