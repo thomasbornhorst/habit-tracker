@@ -18,6 +18,8 @@ namespace Config {
     constexpr uint8_t SHIFT_BTN_PIN = 15;
     constexpr int numButtonOptions = 10; // 5 buttons + 1 shift => 10 total button options
 
+    constexpr int debounceDelay = 50;
+
     // LEDS
     constexpr uint8_t RED_LED_PIN = 13;
     constexpr uint8_t GREEN_LED_PIN = 14;
