@@ -3,6 +3,7 @@
 #include "display.h"
 #include "io_control.h"
 #include "request_handler.h"
+#include "network.h"
 using namespace Config;
 
 void setup() {
@@ -10,10 +11,17 @@ void setup() {
 
     initDisplay();
     initButtonsAndLEDs();
+    redLED.turnOn();
 
     displayStartupScreen();
+    
+    if (connectToNetwork(5000)) {
+        greenLED.turnOn();
+        delay(100);
+        greenLED.turnOff();
+    }
 
-    redLED.startBlinking(250, 1000);
+    redLED.turnOff();
 }
 
 void loop() {

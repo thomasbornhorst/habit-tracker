@@ -38,7 +38,7 @@ namespace Config {
     const GFXfont* const bodyFont = &FreeMono12pt7b;
 
     // NETWORK
-    constexpr int minBetweenRefreshes = 1;
+    constexpr int minBetweenRefreshes = 10;
 }
 
 #endif
