@@ -4,48 +4,80 @@
 #include "HTTPClient.h"
 #include "ArduinoJson.h"
 
-bool connectToNetwork(unsigned long timeout) {
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
+namespace Network {
+    bool connectToNetwork(unsigned long timeout) {
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-    unsigned long start = millis();
-    while ((WiFi.status() != WL_CONNECTED) && ((millis() - start) < timeout)) {
-        delay(250);
-    }
-    return (WiFi.status() == WL_CONNECTED);
-}
-
-bool networkIsConnected() {
-    return (WiFi.status() == WL_CONNECTED);
-}
-
-bool networkGetPing() {
-    Serial.println(WiFi.status());
-    if (!networkIsConnected()) {
-        return false;
-    }
-
-    HTTPClient http;
-    http.begin(String(BACKEND_BASE) + "/api/ping");
-    //http.addHeader
-    http.setTimeout(5000);
-    int code = http.GET();
-    bool ok = false;
-
-    if (code == 200) {
-        JsonDocument doc;
-        DeserializationError err = deserializeJson(doc, http.getStream());
-
-        if (err) {
-            Serial.printf("JSON parse failed. Error: %s\n", err.c_str());
-        } else {
-            const char* time = doc["time"];
-            ok = true;
+        unsigned long start = millis();
+        while ((WiFi.status() != WL_CONNECTED) && ((millis() - start) < timeout)) {
+            delay(250);
         }
-    } else {
-        Serial.printf("Request failed. Code: %d\n", code);
+        return (WiFi.status() == WL_CONNECTED);
     }
 
-    http.end();
-    return ok;
+    bool isNetworkConnected() {
+        return (WiFi.status() == WL_CONNECTED);
+    }
+
+    bool networkGetPing() {
+        Serial.println(WiFi.status());
+        if (!networkIsConnected()) {
+            return false;
+        }
+
+        HTTPClient http;
+        http.begin(String(BACKEND_BASE) + "/api/ping");
+        //http.addHeader
+        http.setTimeout(5000);
+        int code = http.GET();
+        bool ok = false;
+
+        if (code == 200) {
+            JsonDocument doc;
+            DeserializationError err = deserializeJson(doc, http.getStream());
+
+            if (err) {
+                Serial.printf("JSON parse failed. Error: %s\n", err.c_str());
+            } else {
+                const char* time = doc["time"];
+                ok = true;
+            }
+        } else {
+            Serial.printf("Request failed. Code: %d\n", code);
+        }
+
+        http.end();
+        return ok;
+    }
+
+    bool sendGetToServer(String apiRoute, JsonDocument doc) {
+        if (!networkIsConnected()) {
+            return false;
+        }
+
+        HTTPClient http;
+        http.begin(String(BACKEND_BASE) + apiRoute);
+        //http.addHeader
+        http.setTimeout(5000);
+
+        bool ok = false;
+        int code = http.GET();
+        if (code == 200) {
+            DeserializationError err = deserializeJson(doc, http.getStream());
+
+            if (err) {
+                Serial.printf("JSON parse failed. Error: %s\n", err.c_str());
+            } else {
+                const char* date = doc["date"];
+                const char* weather = doc["weather"];
+                ok = true;
+            }
+        } else {
+            Serial.printf("Request failed. Code: %d\n", code);
+        }
+
+        http.end();
+        return ok;
+    }
 }

@@ -1,10 +1,12 @@
 #ifndef REQUEST_HANDLER_H
 #define REQUEST_HANDLER_H
 
-bool getState();
+namespace RequestHandler { 
+    bool shouldRefreshData();
 
-bool shouldRefreshData();
+    void refreshData();
 
-void refreshData();
+    bool getState();
+}
 
 #endif

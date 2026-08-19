@@ -3,59 +3,60 @@
 #include "io_control.h"
 #include "button.h"
 #include "light.h"
-using namespace Config;
 
 namespace {
     Button mainButtons[] = {
-        Button(BTN1_PIN),
-        Button(BTN2_PIN),
-        Button(BTN3_PIN),
-        Button(BTN4_PIN),
-        Button(BTN5_PIN)
+        Button(Config::BTN1_PIN),
+        Button(Config::BTN2_PIN),
+        Button(Config::BTN3_PIN),
+        Button(Config::BTN4_PIN),
+        Button(Config::BTN5_PIN)
     };
 
-    Button shiftButton = Button(SHIFT_BTN_PIN);
+    Button shiftButton = Button(Config::SHIFT_BTN_PIN);
 }
 
-int buttonPressedIndex;
-Light greenLED = Light(GREEN_LED_PIN);
-Light redLED = Light(RED_LED_PIN);
+namespace IO {
+    int buttonPressedIndex;
+    Light greenLED = Light(Config::GREEN_LED_PIN);
+    Light redLED = Light(Config::RED_LED_PIN);
 
-void initButtonsAndLEDs() {
-    for (int i = 0; i < numMainButtons; i++) {
-        mainButtons[i].init();
+    void initButtonsAndLEDs() {
+        for (int i = 0; i < Config::numMainButtons; i++) {
+            mainButtons[i].init();
+        }
+
+        shiftButton.init();
+
+        greenLED.init();
+        redLED.init();
     }
 
-    shiftButton.init();
+    // Updates button states
+    // Updates buttonPressedIndex if any main buttons are newly pressed
+    // If no main buttons newly pressed, sets buttonPressedIndex to -1
+    void updateButtons() {
+        buttonPressedIndex = -1;
 
-    greenLED.init();
-    redLED.init();
-}
+        for (int i = 0; i < Config::numMainButtons; i++) {
+            mainButtons[i].update();
+            if (mainButtons[i].isNewlyPressed()) {
+                buttonPressedIndex = i;
+            }
+        }
 
-// Updates button states
-// Updates buttonPressedIndex if any main buttons are newly pressed
-// If no main buttons newly pressed, sets buttonPressedIndex to -1
-void updateButtons() {
-    buttonPressedIndex = -1;
-
-    for (int i = 0; i < numMainButtons; i++) {
-        mainButtons[i].update();
-        if (mainButtons[i].isNewlyPressed()) {
-            buttonPressedIndex = i;
+        shiftButton.update();
+        if (buttonPressedIndex != -1 && shiftButton.isPressed()) {
+            buttonPressedIndex += Config::numMainButtons;
         }
     }
 
-    shiftButton.update();
-    if (buttonPressedIndex != -1 && shiftButton.isPressed()) {
-        buttonPressedIndex += numMainButtons;
+    void updateLEDs() {
+        greenLED.update();
+        redLED.update();
     }
-}
 
-void updateLEDs() {
-    greenLED.update();
-    redLED.update();
-}
-
-bool isShiftButtonPressed() {
-    return shiftButton.isPressed();
+    bool isShiftButtonPressed() {
+        return shiftButton.isPressed();
+    }
 }

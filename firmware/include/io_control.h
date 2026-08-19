@@ -4,16 +4,18 @@
 #include <Arduino.h>
 #include "light.h"
 
-extern int buttonPressedIndex;
-extern Light redLED;
-extern Light greenLED;
+namespace IO {
+    extern int buttonPressedIndex;
+    extern Light redLED;
+    extern Light greenLED;
 
-void initButtonsAndLEDs();
+    void initButtonsAndLEDs();
 
-void updateButtons();
+    void updateButtons();
 
-void updateLEDs();
+    void updateLEDs();
 
-bool isShiftButtonPressed();
+    bool isShiftButtonPressed();
+}
 
 #endif

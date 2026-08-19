@@ -1,10 +1,12 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-bool connectToNetwork(unsigned long timeout);
+namespace Network {
+    bool connectToNetwork(unsigned long timeout);
 
-bool networkIsConnected();
+    bool networkIsConnected();
 
-bool networkGetPing();
+    bool networkGetPing();
+}
 
 #endif
