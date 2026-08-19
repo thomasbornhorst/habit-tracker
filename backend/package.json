@@ -16,12 +16,14 @@
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "luxon": "^3.7.2",
     "node-cron": "^4.6.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/luxon": "^3.7.4",
     "@types/node": "^26.2.0",
     "drizzle-kit": "^0.31.10",
     "prettier": "3.9.6",
