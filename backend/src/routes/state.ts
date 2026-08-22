@@ -4,12 +4,13 @@ import {
   getMostRecentCompletedTaskEvents,
   getThisWeeksTaskEvents,
 } from '../db/queries';
+import { evaluateNonWeeklyState, evaluateWeeklyState } from '../services/task-status-handler';
 import {
-  evaluateState,
   startOfLocalDayInUTC,
+  startOfLocalDayISO,
   startOfLocalWeekInUTC,
   startOfLocalWeekISO,
-} from '../services/cadence';
+} from '../services/date-handler';
 import { DateTime, ToISODateOptions } from 'luxon';
 
 export const stateRouter = Router();
@@ -31,17 +32,25 @@ stateRouter.get('/state', async (_, res) => {
     startOfLocalWeekISO(),
   );
 
-  const allTaskEvents = [...mostRecentTaskEvents, ...weeklyTaskEvents];
-
   const result = activeTasks.map((row) => {
-    const events = allTaskEvents.filter((e) => e.taskId == row.tasks.id);
+    let status;
+    const cadenceType = row.task_cadence_versions.cadenceType;
+    const currentIntendedLocalDate = startOfLocalDayISO();
+
+    if (cadenceType == 'weekly_quota') {
+      const events = weeklyTaskEvents.filter((e) => e.taskId == row.tasks.id);
+      status = evaluateWeeklyState(row.task_cadence_versions, events, currentIntendedLocalDate);
+    } else {
+      const event = mostRecentTaskEvents.find((e) => e.taskId == row.tasks.id);
+      status = evaluateNonWeeklyState(row.task_cadence_versions, event, currentIntendedLocalDate);
+    }
 
     return {
       id: row.tasks.id,
       label: row.tasks.label,
       cadenceType: row.task_cadence_versions.cadenceType,
       cadenceValue: row.task_cadence_versions.cadenceValue,
-      status: evaluateState(row.tasks, row.task_cadence_versions, events),
+      status: status,
     };
   });
 

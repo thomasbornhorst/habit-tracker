@@ -28,6 +28,10 @@ export const taskEvents = sqliteTable('task_events', {
   vetoedSource: text('vetoed_source', { enum: ['board-display', 'web'] }),
 });
 
+// INDEX?: (taskId, intendedLocalDate, status, vetoedAt)
+// CONSTRAINT: if cadence type of weekly/rolling/decay => require cadence value
+// CONSTRAINT: can't have two completed (non-vetoed) events for same taskID for same intendedLocalDate
+
 export const taskCadenceVersions = sqliteTable('task_cadence_versions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   taskId: integer('task_id')
@@ -42,3 +46,12 @@ export const taskCadenceVersions = sqliteTable('task_cadence_versions', {
     .default(sql`(unixepoch())`),
   effectiveTo: integer('effective_to', { mode: 'timestamp' }),
 });
+
+export type Task = typeof tasks.$inferSelect;
+export type NewTask = typeof tasks.$inferInsert;
+
+export type TaskCadenceVersion = typeof taskCadenceVersions.$inferSelect;
+export type NewTaskCadenceVersion = typeof tasks.$inferInsert;
+
+export type TaskEvent = typeof taskEvents.$inferSelect;
+export type NewTaskEvent = typeof tasks.$inferInsert;
