@@ -1,9 +1,9 @@
 import { db } from '../db';
 import { tasks, taskCadenceVersions, taskEvents } from '../db/schema';
-import { isNull, eq, and, gte, inArray } from 'drizzle-orm';
+import { isNull, eq, and, gte, inArray, sql, getTableColumns } from 'drizzle-orm';
 
 export async function getActiveTasksWithCadenceInfo() {
-  return db
+  return await db
     .select()
     .from(tasks)
     .where(isNull(tasks.archivedAt))
@@ -13,9 +13,42 @@ export async function getActiveTasksWithCadenceInfo() {
     );
 }
 
-export async function getRecentTaskEvents(taskIds: number[], since: Date) {
-  return db
+export async function getMostRecentCompletedTaskEvents(taskIds: number[]) {
+  const rankedEvents = db.$with('ranked_events').as(
+    db
+      .select({
+        ...getTableColumns(taskEvents),
+        rankNumber: sql<number>`row_number() over 
+          (partition by ${taskEvents.taskId} 
+          order by ${taskEvents.loggedAt} desc)`.as('rank_number'),
+      })
+      .from(taskEvents)
+      .where(
+        and(
+          inArray(taskEvents.taskId, taskIds),
+          eq(taskEvents.status, 'completed'),
+          isNull(taskEvents.vetoedAt),
+        ),
+      ),
+  );
+
+  return await db
+    .with(rankedEvents)
+    .select()
+    .from(rankedEvents)
+    .where(eq(rankedEvents.rankNumber, 1));
+}
+
+export async function getThisWeeksTaskEvents(taskIds: number[], startOfWeek: string) {
+  return await db
     .select()
     .from(taskEvents)
-    .where(and(inArray(taskEvents.taskId, taskIds), gte(taskEvents.loggedAt, since)));
+    .where(
+      and(
+        inArray(taskEvents.id, taskIds),
+        gte(taskEvents.intendedLocalDate, startOfWeek),
+        eq(taskEvents.status, 'completed'),
+        isNull(taskEvents.vetoedAt),
+      ),
+    );
 }

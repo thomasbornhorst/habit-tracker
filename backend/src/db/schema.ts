@@ -21,8 +21,11 @@ export const taskEvents = sqliteTable('task_events', {
   loggedAt: integer('logged_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
-  status: text('status', { enum: ['completed', 'canceled'] }).notNull(),
+  intendedLocalDate: text('intended_local_date').notNull(),
+  status: text('status', { enum: ['completed', 'canceled', 'vetoed'] }).notNull(),
   source: text('source', { enum: ['api', 'board-display', 'web'] }).notNull(),
+  vetoedAt: integer('vetoed_at', { mode: 'timestamp' }),
+  vetoedSource: text('vetoed_source', { enum: ['board-display', 'web'] }),
 });
 
 export const taskCadenceVersions = sqliteTable('task_cadence_versions', {
