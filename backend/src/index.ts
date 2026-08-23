@@ -3,6 +3,8 @@ import { pingRouter } from './routes/ping';
 import { stateRouter } from './routes/state';
 import { logRouter } from './routes/log';
 
+require('dotenv').config();
+
 const app = express();
 app.use(express.json());
 

@@ -1,13 +1,6 @@
 import { DateTime } from 'luxon';
 import { getDaysRemainingInWeek, ISODateString } from './date-handler';
-import {
-  tasks,
-  taskCadenceVersions,
-  taskEvents,
-  Task,
-  TaskCadenceVersion,
-  TaskEvent,
-} from '../db/schema';
+import { TaskCadenceVersion, TaskEvent } from '../db/schema';
 
 const timezone = 'America/Chicago';
 
@@ -66,7 +59,7 @@ export function evaluateWeeklyState(
 
   const numCompletions = thisWeeksCompletedTaskEvents.length;
   const quota = taskCadenceVersion.cadenceValue;
-  const daysLeftInWeek = getDaysRemainingInWeek(currentIntendedLocalDate); // TODO: Pass in days left in week
+  const daysLeftInWeek = getDaysRemainingInWeek(currentIntendedLocalDate);
 
   // TODO: add logic for isAhead / isBehind
 

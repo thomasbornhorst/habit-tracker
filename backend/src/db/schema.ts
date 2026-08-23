@@ -1,11 +1,24 @@
 import { integer, sqliteTable, text, primaryKey, foreignKey } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
+export const TASK_APIS = [
+  'google-health-cardio',
+  'google-health-lifting',
+  'anki-greek',
+  'chores',
+  'github',
+] as const;
+export const EVENT_STATUSES = ['completed', 'canceled', 'vetoed'] as const;
+export const NEW_EVENT_STATUSES = ['completed', 'canceled'] as const;
+export const EVENT_SOURCES = ['api', 'board-display', 'web'] as const;
+export const VETO_SOURCES = ['board-display', 'web'] as const;
+export const CADENCE_TYPES = ['weekly_quota', 'daily', 'rolling', 'decay'] as const;
+
 export const tasks = sqliteTable('tasks', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   label: text().notNull(),
   api: text({
-    enum: ['google-health-cardio', 'google-health-lifting', 'anki-greek', 'chores', 'github'],
+    enum: TASK_APIS,
   }),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
@@ -22,10 +35,10 @@ export const taskEvents = sqliteTable('task_events', {
     .notNull()
     .default(sql`(unixepoch())`),
   intendedLocalDate: text('intended_local_date').notNull(),
-  status: text('status', { enum: ['completed', 'canceled', 'vetoed'] }).notNull(),
-  source: text('source', { enum: ['api', 'board-display', 'web'] }).notNull(),
+  status: text('status', { enum: EVENT_STATUSES }).notNull(),
+  source: text('source', { enum: EVENT_SOURCES }).notNull(),
   vetoedAt: integer('vetoed_at', { mode: 'timestamp' }),
-  vetoedSource: text('vetoed_source', { enum: ['board-display', 'web'] }),
+  vetoedSource: text('vetoed_source', { enum: VETO_SOURCES }),
 });
 
 // INDEX?: (taskId, intendedLocalDate, status, vetoedAt)
@@ -38,7 +51,7 @@ export const taskCadenceVersions = sqliteTable('task_cadence_versions', {
     .references(() => tasks.id)
     .notNull(),
   cadenceType: text('cadence_type', {
-    enum: ['weekly_quota', 'daily', 'rolling', 'decay'],
+    enum: CADENCE_TYPES,
   }).notNull(),
   cadenceValue: integer('cadence_value'),
   effectiveFrom: integer('effective_from', { mode: 'timestamp' })

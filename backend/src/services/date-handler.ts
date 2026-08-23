@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { error } from 'node:console';
 
-const timezone = 'America/Chicago';
+export const timezone = process.env.HOST_TIMEZONE;
 const ISODateRegEx = /^\d{4}-\d{2}-\d{2}$/;
 
 export type ISODateString = string & { readonly __brand: 'ISODateString' };
