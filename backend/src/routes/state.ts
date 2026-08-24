@@ -54,5 +54,10 @@ stateRouter.get('/state', async (_, res) => {
     };
   });
 
-  res.json(result);
+  res.json({
+    name: 'Thomas Bornhorst',
+    date: startOfLocalDayISO(),
+    weather: 'Weather functionality pending...',
+    tasks: result,
+  });
 });

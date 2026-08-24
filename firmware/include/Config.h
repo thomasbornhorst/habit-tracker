@@ -5,6 +5,7 @@
 #include "Fonts/FreeMonoBold24pt7b.h"
 #include "Fonts/FreeMono18pt7b.h"
 #include "Fonts/FreeMono12pt7b.h"
+#include "Fonts/FreeMono9pt7b.h"
 
 namespace Config {
     // BUTTONS
@@ -18,7 +19,7 @@ namespace Config {
     constexpr uint8_t SHIFT_BTN_PIN = 15;
     constexpr int numButtonOptions = 10; // 5 buttons + 1 shift => 10 total button options
 
-    constexpr int debounceDelay = 50;
+    constexpr int debounceDelay = 25;
 
     // LEDS
     constexpr uint8_t RED_LED_PIN = 13;
@@ -36,11 +37,18 @@ namespace Config {
 
     // FONTS
     const GFXfont* const titleFont = &FreeMonoBold24pt7b;
-    const GFXfont* const headerFont = &FreeMono18pt7b;
+    const GFXfont* const headerFont = &FreeMono12pt7b;
     const GFXfont* const bodyFont = &FreeMono12pt7b;
+    const GFXfont* const smallFont = &FreeMono9pt7b;
 
     // NETWORK
     constexpr int minBetweenRefreshes = 10;
+
+    // DISPLAY SIZES
+    constexpr int rowSpacing = 10;
+    constexpr int checkboxSize = 20;
+    constexpr int horizontalSpacing = 10;
+    constexpr int rowLeftX = 25;
 }
 
 #endif

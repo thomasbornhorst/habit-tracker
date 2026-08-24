@@ -2,6 +2,8 @@
 #include <Config.h>
 #include "task.h"
 #include <vector>
+#include "network.h"
+#include "ArduinoJson.h"
 
 namespace {
     unsigned long lastRefresh = millis();
@@ -24,6 +26,35 @@ namespace RequestHandler {
     }
 
     bool getState() {
-        return false;
+        JsonDocument doc;
+        bool success = Network::sendGetToServer("/api/state", doc);
+        if (!success) {
+            return false;
+        }
+
+        const char* name = doc["name"];
+        Serial.println(name);
+
+        JsonArray tasks = doc["tasks"];
+        for (JsonObject task : tasks) {
+            int id = task["id"];
+            const char* taskLabel = task["label"];
+            Serial.println(id);
+            Serial.println(taskLabel);
+        }
+
+        return true;
+    }
+
+    bool getPing() {
+        JsonDocument doc;
+        bool success = Network::sendGetToServer("/api/ping", doc);
+        if (!success) {
+            return false;
+        }
+
+        const char* time = doc["time"];
+        Serial.println(time);
+        return true;
     }
 }

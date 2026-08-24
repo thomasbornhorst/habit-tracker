@@ -7,6 +7,8 @@ namespace RequestHandler {
     void refreshData();
 
     bool getState();
+
+    bool getPing();
 }
 
 #endif

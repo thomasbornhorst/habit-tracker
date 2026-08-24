@@ -19,7 +19,10 @@ void setup() {
         IO::greenLED.turnOff();
     }
 
+    RequestHandler::getState();
+
     IO::redLED.turnOff();
+    Display::displayStateScreen();
 }
 
 void loop() {
