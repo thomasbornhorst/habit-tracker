@@ -6,6 +6,10 @@
 
 namespace Network {
     bool connectToNetwork(unsigned long timeout) {
+        if (isNetworkConnected()) {
+            return true;
+        }
+
         WiFi.mode(WIFI_STA);
         WiFi.begin(WIFI_SSID, WIFI_PASS);
 
@@ -21,7 +25,7 @@ namespace Network {
     }
 
     bool sendGetToServer(String apiRoute, JsonDocument& doc) {
-        if (!isNetworkConnected()) {
+        if (!isNetworkConnected() && !connectToNetwork(1500)) {
             return false;
         }
 

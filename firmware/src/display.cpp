@@ -4,6 +4,8 @@
 #include "display.h"
 #include <functional>
 #include <Adafruit_GFX.h>
+#include "state.h"
+#include "task.h"
 
 namespace {
     GxEPD2_BW<GxEPD2_DRIVER_CLASS, GxEPD2_DRIVER_CLASS::HEIGHT> display(
@@ -84,41 +86,81 @@ namespace Display {
         display.setCursor(cursorX, cursorY);
     }
 
-    void drawTask(int16_t leftX, int16_t topY, String text, bool completed) {
+    void drawTask(Task& task) {
+        int16_t leftX = task.xStartCoord;
+        int16_t topY = task.yStartCoord;
+
+        //TODO: Deal with overflowing strings & better positioning
         drawCheckbox(leftX,topY);
+        if (true || task.isCompleted) {
+            drawTaskCheckboxAsCompleted(task);
+        }
 
         leftX += Config::checkboxSize + Config::horizontalSpacing;
         
-        writeTextMidLeftAnchor(leftX, topY, Config::checkboxSize, text, Config::bodyFont);
+        writeTextMidLeftAnchor(leftX, topY, Config::checkboxSize, task.label, Config::bodyFont);
 
-        // TODO: Implement status message for non-weekly things (maybe "Last Comp: ...")
-        leftX = 225;
-        writeTextMidLeftAnchor(leftX, topY, Config::checkboxSize, "| Weekly: 0/1", Config::smallFont);
-        leftX = 370;
-        drawCheckbox(leftX, topY);
+        leftX = 300;
+        writeTextMidLeftAnchor(leftX, topY, Config::checkboxSize, task.getTaskDetailsString(), Config::smallFont);
     }
 
-    void displayStateScreen() {
+    void drawHeader(State& state, int16_t x, int16_t y) {
+        display.setFont(Config::headerFont);
+        display.setCursor(x, y);
+        display.print("Tasks! " + state.dateString);
+    }
+
+    void drawTaskCheckboxAsCompleted(Task& task) {
+        int offset = 2;
+        int16_t intersectionX = task.xStartCoord + (Config::checkboxSize / 2);
+        int16_t intersectionY = task.yStartCoord + (Config::checkboxSize - 4);
+
+        display.drawLine((task.xStartCoord + 5),(task.yStartCoord + 5),intersectionX,intersectionY,GxEPD_BLACK);
+        display.drawLine(intersectionX,intersectionY,(task.xStartCoord + Config::checkboxSize + 3),(task.yStartCoord - 5),GxEPD_BLACK);
+    }
+
+    void drawTaskListHeader(int16_t x, int16_t y) {
+        display.setFont(Config::smallFont);
+        setCursorPositionsFromTextBounds(x, y, "TODAY", false, true);
+        display.print("TODAY");
+    }
+
+    void displayUpdateTaskCompletionStatus(Task& task) {
+        int16_t x, y, w, h;
+        x = task.xStartCoord;
+        y = task.yStartCoord - 5;
+        w = Config::checkboxSize + 3;
+        h = Config::checkboxSize + 5;
+        displayPartialPage(x, y, w, h, [&]() {
+            display.fillRect(x, y, w, h, GxEPD_WHITE);
+            drawCheckbox(task.xStartCoord, task.yStartCoord);
+            if (task.isCompleted) {
+                drawTaskCheckboxAsCompleted(task);
+            }
+        });
+    }
+
+    void displayStateScreen(State& state) {
         displayFullPage([&]() {
             int16_t cursorX = 5;
-            int16_t cursorY = 20;
-
-            display.setFont(Config::headerFont);
-            display.setCursor(cursorX, cursorY);
-            display.print("Tasks! August 23rd, 2026");
+            int16_t cursorY = Config::sectionSpacing;
+            drawHeader(state, cursorX, cursorY);
             
             cursorX = Config::rowLeftX + (Config::checkboxSize / 2);
-            cursorY = cursorY + 20;
-            display.setFont(Config::smallFont);
-            setCursorPositionsFromTextBounds(cursorX, cursorY, "DAILY", false, true);
-            display.print("DAILY");
+            cursorY += Config::sectionSpacing;
+            drawTaskListHeader(cursorX, cursorY);
 
             cursorX = Config::rowLeftX;
-            cursorY = cursorY + 20;
+            cursorY += Config::sectionSpacing;
+            for (int i = 0; i < state.tasks.size(); i++) {
+                Task& task = state.tasks[i];
+                task.xStartCoord = cursorX;
+                task.yStartCoord = cursorY;
 
-            drawTask(cursorX, cursorY, "Flashcards");
-            cursorY += Config::checkboxSize + Config::rowSpacing;
-            drawTask(cursorX, cursorY, "Cardio");
+                drawTask(task);
+
+                cursorY += Config::checkboxSize + Config::taskRowSpacing;
+            }
         });
     }
 }

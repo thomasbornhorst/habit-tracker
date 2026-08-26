@@ -7,9 +7,10 @@ import {
 import { evaluateNonWeeklyState, evaluateWeeklyState } from '../services/task-status-handler';
 import {
   startOfLocalDayInUTC,
-  startOfLocalDayISO,
+  localDayISO,
   startOfLocalWeekInUTC,
   startOfLocalWeekISO,
+  localDayLongStr,
 } from '../services/date-handler';
 import { DateTime, ToISODateOptions } from 'luxon';
 
@@ -35,7 +36,7 @@ stateRouter.get('/state', async (_, res) => {
   const result = activeTasks.map((row) => {
     let status;
     const cadenceType = row.task_cadence_versions.cadenceType;
-    const currentIntendedLocalDate = startOfLocalDayISO();
+    const currentIntendedLocalDate = localDayISO();
 
     if (cadenceType == 'weekly_quota') {
       const events = weeklyTaskEvents.filter((e) => e.taskId == row.tasks.id);
@@ -51,13 +52,17 @@ stateRouter.get('/state', async (_, res) => {
       cadenceType: row.task_cadence_versions.cadenceType,
       cadenceValue: row.task_cadence_versions.cadenceValue,
       status: status,
+      //isCompletedToday
+      //lastCompletionDateStr
+      //numCompletionsThisWeek
     };
   });
 
   res.json({
     name: 'Thomas Bornhorst',
-    date: startOfLocalDayISO(),
-    weather: 'Weather functionality pending...',
+    date: localDayLongStr(),
+    weather: 'Weather...',
+    timestampUTC: DateTime.now().toUTC().toSeconds(),
     tasks: result,
   });
 });

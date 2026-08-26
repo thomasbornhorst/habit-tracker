@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <Adafruit_GFX.h>
+#include "state.h"
 
 namespace Display {
     void initDisplay();
@@ -23,9 +24,17 @@ namespace Display {
 
     void setCursorPositionsFromTextBounds(int16_t leftX, int16_t targetY, String text, bool anchorMidY = false, bool anchorMidX = false);
 
-    void drawTask(int16_t leftX, int16_t topY, String text, bool completed = false);
+    void drawTask(Task& task);
 
-    void displayStateScreen();
+    void drawHeader(State& state, int16_t x, int16_t y);
+
+    void drawTaskCheckboxAsCompleted(Task& task);
+
+    void drawTaskListHeader(int16_t x, int16_t y);
+
+    void displayUpdateTaskCompletionStatus(Task& task);
+
+    void displayStateScreen(State& state);
 }
 
 #endif

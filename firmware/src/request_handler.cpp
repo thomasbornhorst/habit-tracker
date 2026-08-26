@@ -4,6 +4,9 @@
 #include <vector>
 #include "network.h"
 #include "ArduinoJson.h"
+#include "state.h"
+#include "task.h"
+#include "request_handler.h"
 
 namespace {
     unsigned long lastRefresh = millis();
@@ -21,29 +24,67 @@ namespace RequestHandler {
         return ((millis() - lastRefresh) > (Config::minBetweenRefreshes * 60000));
     }
 
-    void refreshData() {
+    // Send GET to server for state, populate passed-in State object with the response 
+    bool getState(State& state) {
         lastRefresh = millis();
-    }
 
-    bool getState() {
         JsonDocument doc;
         bool success = Network::sendGetToServer("/api/state", doc);
         if (!success) {
             return false;
         }
 
-        const char* name = doc["name"];
-        Serial.println(name);
+        state = State();
+        state.name = doc["name"].as<String>();
+        state.dateString = doc["date"].as<String>();
+        state.weatherString = doc["weather"].as<String>();
+        state.timestampUTC = doc["timestampUTC"];
+        state.millisAtTimestamp = millis();
 
         JsonArray tasks = doc["tasks"];
-        for (JsonObject task : tasks) {
-            int id = task["id"];
-            const char* taskLabel = task["label"];
-            Serial.println(id);
-            Serial.println(taskLabel);
+        for (JsonObject taskObj : tasks) {
+            Task newTask = Task();
+            if (getTaskFromJson(taskObj, newTask)) {
+                state.tasks.push_back(newTask);
+            }
         }
 
         return true;
+    }
+
+    bool getTaskFromJson(JsonObject taskObject, Task& task) {
+        task.id = taskObject["id"];
+        task.label = taskObject["label"].as<String>();
+        task.cadenceType = parseCadenceType(taskObject["cadenceType"].as<String>());
+        task.cadenceVal = taskObject["cadenceValue"];
+        task.statusCode = taskObject["status"];
+        task.isCompleted = taskObject["isCompletedToday"];
+        task.lastCompDateStr = taskObject["lastCompletionDateStr"].as<String>();
+        task.numCompsForWeek = taskObject["numCompletionsThisWeek"];
+
+        if (task.id <= 0) {
+            Serial.println("Invalid task id"); //TODO include taskID
+            return false;
+        } else if (task.cadenceType == CadenceType::Unknown) {
+            Serial.println("Unknown cadence type (" + taskObject["cadenceType"].as<String>() + ") for task id: " + String(task.id));
+            return false;
+        }
+
+        return true;
+    }
+
+    static CadenceType parseCadenceType(String cadenceTypeStr) {
+        if (cadenceTypeStr.equalsIgnoreCase("Daily")) {
+            return CadenceType::Daily;
+        } else if (cadenceTypeStr.equalsIgnoreCase("Rolling")) {
+            return CadenceType::Rolling;
+        } else if (cadenceTypeStr.equalsIgnoreCase("Decay")) {
+            return CadenceType::Decay;
+        } else if (cadenceTypeStr.equalsIgnoreCase("Weekly_Quota")) {
+            return CadenceType::Weekly;
+        }
+
+        return CadenceType::Unknown;
     }
 
     bool getPing() {

@@ -45,4 +45,19 @@ struct Button {
     }
 };
 
+enum class ButtonAction { ToggleTask, RefreshData, RefreshDisplay, NextPage, None };
+
+struct ButtonBinding {
+    ButtonAction action;
+    int taskIndex;
+
+    explicit ButtonBinding() {}
+
+    explicit ButtonBinding(ButtonAction buttonAction): action(buttonAction) {
+        taskIndex = -1;
+    }
+
+    explicit ButtonBinding(ButtonAction buttonAction, int taskIndex): action(buttonAction), taskIndex(taskIndex) {}
+};
+
 #endif

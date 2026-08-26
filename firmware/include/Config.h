@@ -18,6 +18,11 @@ namespace Config {
 
     constexpr uint8_t SHIFT_BTN_PIN = 15;
     constexpr int numButtonOptions = 10; // 5 buttons + 1 shift => 10 total button options
+    constexpr int numNonTaskButtons = 3;
+    constexpr int maxTasksToShow = numButtonOptions - numNonTaskButtons;
+    constexpr int nextPageButtonIndex = 7;
+    constexpr int refreshDisplayButtonIndex = 8;
+    constexpr int refreshDataButtonIndex = 9;
 
     constexpr int debounceDelay = 25;
 
@@ -45,7 +50,8 @@ namespace Config {
     constexpr int minBetweenRefreshes = 10;
 
     // DISPLAY SIZES
-    constexpr int rowSpacing = 10;
+    constexpr int sectionSpacing = 20;
+    constexpr int taskRowSpacing = 10;
     constexpr int checkboxSize = 20;
     constexpr int horizontalSpacing = 10;
     constexpr int rowLeftX = 25;

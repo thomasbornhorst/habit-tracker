@@ -1,12 +1,19 @@
 #ifndef REQUEST_HANDLER_H
 #define REQUEST_HANDLER_H
 
-namespace RequestHandler { 
+#include "state.h"
+#include "ArduinoJson.h"
+#include "task.h"
+
+namespace RequestHandler {
+    // Check if need to refresh data again
     bool shouldRefreshData();
 
-    void refreshData();
+    bool getState(State& state);
 
-    bool getState();
+    bool getTaskFromJson(JsonObject taskObject, Task& task);
+
+    static CadenceType parseCadenceType(String cadenceTypeStr);
 
     bool getPing();
 }

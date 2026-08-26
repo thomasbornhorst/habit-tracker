@@ -3,6 +3,25 @@
 #include "io_control.h"
 #include "request_handler.h"
 #include "network.h"
+#include "state.h"
+
+State mainState;
+
+void flashGreenStatus() {
+    IO::greenLED.turnOn();
+    delay(100);
+    IO::greenLED.turnOff();
+}
+
+void getNewState() {
+    IO::redLED.turnOn();
+    if (RequestHandler::getState(mainState)) {
+        flashGreenStatus();
+        mainState.rebuildButtons();
+        Display::displayStateScreen(mainState);
+    };
+    IO::redLED.turnOff();
+}
 
 void setup() {
     Serial.begin(115200);
@@ -14,15 +33,12 @@ void setup() {
     Display::displayStartupScreen();
     
     if (Network::connectToNetwork(5000)) {
-        IO::greenLED.turnOn();
-        delay(100);
-        IO::greenLED.turnOff();
+        flashGreenStatus();
     }
 
-    RequestHandler::getState();
+    getNewState();
 
     IO::redLED.turnOff();
-    Display::displayStateScreen();
 }
 
 void loop() {
@@ -30,8 +46,7 @@ void loop() {
     IO::updateLEDs();
 
     if (RequestHandler::shouldRefreshData()) {
-        IO::greenLED.startBlinking(250, 5000);
-        RequestHandler::refreshData();
+        getNewState();
     }
 
     if (IO::buttonPressedIndex != -1) {

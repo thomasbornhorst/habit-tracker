@@ -35,8 +35,12 @@ export function startOfLocalDayInUTC(now: DateTime = DateTime.now()): Date {
   return now.setZone(timezone).startOf('day').toUTC().toJSDate();
 }
 
-export function startOfLocalDayISO(now: DateTime = DateTime.now()): ISODateString {
-  return now.setZone(timezone).startOf('day').toISODate()! as ISODateString;
+export function localDayISO(now: DateTime = DateTime.now()): ISODateString {
+  return now.setZone(timezone).toISODate()! as ISODateString;
+}
+
+export function localDayLongStr(now: DateTime = DateTime.now()): string {
+  return now.setZone(timezone).toLocaleString({ weekday: 'long', month: 'short', day: '2-digit' });
 }
 
 export function getDaysRemainingInWeek(today: ISODateString) {
