@@ -16,6 +16,10 @@ namespace RequestHandler {
     static CadenceType parseCadenceType(String cadenceTypeStr);
 
     bool getPing();
+
+    bool sendTaskCompletion(Task& task);
+
+    bool sendTaskEventVoid(Task& task);
 }
 
 #endif

@@ -27,7 +27,7 @@ export async function getMostRecentCompletedTaskEvents(taskIds: number[]) {
         and(
           inArray(taskEvents.taskId, taskIds),
           eq(taskEvents.status, 'completed'),
-          isNull(taskEvents.vetoedAt),
+          isNull(taskEvents.voidedAt),
         ),
       ),
   );
@@ -48,7 +48,7 @@ export async function getThisWeeksTaskEvents(taskIds: number[], startOfWeek: str
         inArray(taskEvents.id, taskIds),
         gte(taskEvents.intendedLocalDate, startOfWeek),
         eq(taskEvents.status, 'completed'),
-        isNull(taskEvents.vetoedAt),
+        isNull(taskEvents.voidedAt),
       ),
     );
 }

@@ -46,11 +46,23 @@ void handleButtonPress(int buttonPressIndex) {
     ButtonBinding btnBinding = mainState.buttonBindings[buttonPressIndex];
     switch (btnBinding.action) {
         case ButtonAction::ToggleTask: {
-            Serial.println("TOGGLE TASK");
             Task& task = mainState.tasks[btnBinding.taskIndex];
-            Serial.println(task.label);
             task.isCompleted = !task.isCompleted;
             Display::displayUpdateTaskCompletionStatus(task);
+
+            // TODO: Queue up these completions instead of sending them right away?
+            if (task.isCompleted) {
+                if (RequestHandler::sendTaskCompletion(task)) {
+                    flashGreenStatus();
+                }
+                // TODO: Deal with failed task update?
+            } else if (task.eventId > 0) {
+                if (RequestHandler::sendTaskEventVoid(task)) {
+                    flashGreenStatus();
+                }
+                // TODO: Deal with failed task update?
+            }
+
             break;
         }
         case ButtonAction::NextPage:
@@ -77,7 +89,6 @@ void loop() {
     }
 
     if (IO::buttonPressedIndex != -1) {
-        Serial.println(IO::buttonPressedIndex);
         handleButtonPress(IO::buttonPressedIndex);
     }
 }

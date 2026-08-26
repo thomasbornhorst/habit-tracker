@@ -23,6 +23,10 @@ export function toISODateString(dateString: string): ISODateString {
   return dateString as ISODateString;
 }
 
+export function getMonthDayFromISODateString(dateString: ISODateString): string {
+  return dateString.slice(5);
+}
+
 export function startOfLocalWeekInUTC(now: DateTime = DateTime.now()): Date {
   return now.setZone(timezone).startOf('week').toUTC().toJSDate();
 }

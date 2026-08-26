@@ -12,6 +12,7 @@ struct Task {
     String label;
     CadenceType cadenceType;
     int cadenceVal;
+    int eventId = -1;
 
     // Display
     int xStartCoord;

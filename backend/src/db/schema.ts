@@ -8,10 +8,10 @@ export const TASK_APIS = [
   'chores',
   'github',
 ] as const;
-export const EVENT_STATUSES = ['completed', 'canceled', 'vetoed'] as const;
+export const EVENT_STATUSES = ['completed', 'canceled', 'voided'] as const;
 export const NEW_EVENT_STATUSES = ['completed', 'canceled'] as const;
 export const EVENT_SOURCES = ['api', 'board-display', 'web'] as const;
-export const VETO_SOURCES = ['board-display', 'web'] as const;
+export const VOID_SOURCES = ['board-display', 'web'] as const;
 export const CADENCE_TYPES = ['weekly_quota', 'daily', 'rolling', 'decay'] as const;
 
 export const tasks = sqliteTable('tasks', {
@@ -37,13 +37,13 @@ export const taskEvents = sqliteTable('task_events', {
   intendedLocalDate: text('intended_local_date').notNull(),
   status: text('status', { enum: EVENT_STATUSES }).notNull(),
   source: text('source', { enum: EVENT_SOURCES }).notNull(),
-  vetoedAt: integer('vetoed_at', { mode: 'timestamp' }),
-  vetoedSource: text('vetoed_source', { enum: VETO_SOURCES }),
+  voidedAt: integer('voided_at', { mode: 'timestamp' }),
+  voidedSource: text('voided_source', { enum: VOID_SOURCES }),
 });
 
-// INDEX?: (taskId, intendedLocalDate, status, vetoedAt)
+// INDEX?: (taskId, intendedLocalDate, status, voidedAt)
 // CONSTRAINT: if cadence type of weekly/rolling/decay => require cadence value
-// CONSTRAINT: can't have two completed (non-vetoed) events for same taskID for same intendedLocalDate
+// CONSTRAINT: can't have two completed (non-voided) events for same taskID for same intendedLocalDate
 
 export const taskCadenceVersions = sqliteTable('task_cadence_versions', {
   id: integer('id').primaryKey({ autoIncrement: true }),

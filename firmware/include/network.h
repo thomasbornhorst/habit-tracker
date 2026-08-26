@@ -10,6 +10,10 @@ namespace Network {
     bool isNetworkConnected();
 
     bool sendGetToServer(String apiRoute, JsonDocument& doc);
+
+    bool sendPostToServer(String apiRoute, const JsonDocument& doc);
+
+    bool sendPatchToServer(String apiRoute, const JsonDocument& doc);
 }
 
 #endif

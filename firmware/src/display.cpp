@@ -102,7 +102,7 @@ namespace Display {
         
         writeTextMidLeftAnchor(leftX, topY, Config::checkboxSize, task.label, Config::bodyFont);
 
-        leftX = 300;
+        leftX = 270;
         writeTextMidLeftAnchor(leftX, topY, Config::checkboxSize, task.getTaskDetailsString(), Config::smallFont);
     }
 
@@ -134,7 +134,6 @@ namespace Display {
         w = Config::checkboxSize + 3;
         h = Config::checkboxSize + 5;
         displayPartialPage(x, y, w, h, [&]() {
-            display.fillRect(x, y, w, h, GxEPD_WHITE);
             drawCheckbox(task.xStartCoord, task.yStartCoord);
             if (task.isCompleted) {
                 drawTaskCheckboxAsCompleted(task);

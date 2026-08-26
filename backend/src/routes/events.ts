@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { DateTime } from 'luxon';
 import { timezone } from '../services/date-handler';
 
-export const logRouter = Router();
+export const eventsRouter = Router();
 
 const logTaskEventSchema = z.object({
   taskId: z.number().int().positive(),
@@ -35,7 +35,8 @@ export function resolveLogEventTimestamps(input: LogEventInput): {
   return { loggedAtDate, intendedLocalDate };
 }
 
-logRouter.post('/log', async (req, res) => {
+//TODO: Allow logging of a batch of events instead of just a single event
+eventsRouter.post('/events', async (req, res) => {
   const parsedReq = logTaskEventSchema.safeParse(req.body);
 
   if (!parsedReq.success) {
@@ -62,7 +63,7 @@ logRouter.post('/log', async (req, res) => {
       loggedAt: loggedAtDate,
       intendedLocalDate: intendedLocalDate,
     })
-    .returning();
+    .returning({ eventId: taskEvents.id });
 
   res.status(201).json(event);
 });

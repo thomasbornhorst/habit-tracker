@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveLogEventTimestamps } from './log';
+import { resolveLogEventTimestamps } from './events';
 import { afterEach, beforeEach } from 'node:test';
 import { DateTime, Settings } from 'luxon';
 import { timezone } from '../services/date-handler';

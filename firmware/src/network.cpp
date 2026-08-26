@@ -51,4 +51,59 @@ namespace Network {
         http.end();
         return ok;
     }
+
+    bool sendPostToServer(String apiRoute, const JsonDocument& doc) {
+        if (!isNetworkConnected() && !connectToNetwork(1500)) {
+            return false;
+        }
+
+        String requestBody;
+        serializeJson(doc, requestBody);
+
+        HTTPClient http;
+        http.begin(String(BACKEND_BASE) + apiRoute);
+        http.addHeader("Content-Type", "application/json");
+        //http.addHeader
+        http.setTimeout(5000);
+
+        bool ok = false;
+        int code = http.POST(requestBody);
+
+        if (code == 201) {
+            ok = true;
+        } else {
+            Serial.printf("Request failed. Code: %d\n", code);
+        }
+
+        http.end();
+        return ok;
+    }
+
+    //TODO: Implement
+    bool sendPatchToServer(String apiRoute, const JsonDocument& doc) {
+        if (!isNetworkConnected() && !connectToNetwork(1500)) {
+            return false;
+        }
+
+        String requestBody;
+        serializeJson(doc, requestBody);
+
+        HTTPClient http;
+        http.begin(String(BACKEND_BASE) + apiRoute);
+        http.addHeader("Content-Type", "application/json");
+        //http.addHeader
+        http.setTimeout(5000);
+
+        bool ok = false;
+        int code = http.PATCH(requestBody);
+
+        if (code == 201) {
+            ok = true;
+        } else {
+            Serial.printf("Request failed. Code: %d\n", code);
+        }
+
+        http.end();
+        return ok;
+    }
 }

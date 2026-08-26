@@ -58,7 +58,8 @@ namespace RequestHandler {
         task.cadenceType = parseCadenceType(taskObject["cadenceType"].as<String>());
         task.cadenceVal = taskObject["cadenceValue"];
         task.statusCode = taskObject["status"];
-        task.isCompleted = taskObject["isCompletedToday"];
+        task.eventId = taskObject["eventId"] | -1;
+        task.isCompleted = (task.eventId > 0);
         task.lastCompDateStr = taskObject["lastCompletionDateStr"].as<String>();
         task.numCompsForWeek = taskObject["numCompletionsThisWeek"];
 
@@ -97,5 +98,19 @@ namespace RequestHandler {
         const char* time = doc["time"];
         Serial.println(time);
         return true;
+    }
+
+    bool sendTaskCompletion(Task& task) {
+        JsonDocument doc;
+        doc["taskId"] = task.id;
+        doc["source"] = "board-display";
+        return Network::sendPostToServer("/api/events", doc);
+    }
+
+    bool sendTaskEventVoid(Task& task) {
+        JsonDocument doc;
+        doc["taskId"] = task.id;
+        doc["source"] = "board-display";
+        return Network::sendPatchToServer("/api/events/:" + String(task.eventId) + "/void", doc);
     }
 }
