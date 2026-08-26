@@ -21,6 +21,8 @@ struct Button {
     void update() {
         bool newReading = (digitalRead(pin) == LOW);
 
+        previouslyPressed = currentlyPressed;
+
         // button state has changed
         if (newReading != reading) {
             lastStateChange = millis();
@@ -30,7 +32,6 @@ struct Button {
         // debouncing
         if (reading != currentlyPressed) {
             if ((millis() - lastStateChange) > Config::debounceDelay) {
-                previouslyPressed = currentlyPressed;
                 currentlyPressed = reading;
             }
         }

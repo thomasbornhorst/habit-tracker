@@ -29,7 +29,7 @@ struct State {
 
         int i = 0;
         for (; i < numTasksToShow; i++) {
-            buttonBindings[i] = ButtonBinding(ButtonAction::ToggleTask, tasks[i].id);
+            buttonBindings[i] = ButtonBinding(ButtonAction::ToggleTask, i);
         }
         for (; i < Config::maxTasksToShow; i++) {
             buttonBindings[i] = ButtonBinding(ButtonAction::None);

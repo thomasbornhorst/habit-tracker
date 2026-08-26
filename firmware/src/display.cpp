@@ -40,6 +40,8 @@ namespace Display {
 
             drawFn();
         } while (display.nextPage());
+
+        display.hibernate();
     }
 
     void displayStartupScreen() {
@@ -92,7 +94,7 @@ namespace Display {
 
         //TODO: Deal with overflowing strings & better positioning
         drawCheckbox(leftX,topY);
-        if (true || task.isCompleted) {
+        if (task.isCompleted) {
             drawTaskCheckboxAsCompleted(task);
         }
 

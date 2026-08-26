@@ -41,9 +41,36 @@ void setup() {
     IO::redLED.turnOff();
 }
 
+void handleButtonPress(int buttonPressIndex) {
+    IO::redLED.turnOn();
+    ButtonBinding btnBinding = mainState.buttonBindings[buttonPressIndex];
+    switch (btnBinding.action) {
+        case ButtonAction::ToggleTask: {
+            Serial.println("TOGGLE TASK");
+            Task& task = mainState.tasks[btnBinding.taskIndex];
+            Serial.println(task.label);
+            task.isCompleted = !task.isCompleted;
+            Display::displayUpdateTaskCompletionStatus(task);
+            break;
+        }
+        case ButtonAction::NextPage:
+            break;
+        case ButtonAction::RefreshDisplay:
+            Display::displayStateScreen(mainState);
+            break;
+        case ButtonAction::RefreshData:
+            getNewState();
+            break;
+        default: break;
+    }
+    IO::redLED.turnOff();
+}
+
 void loop() {
     IO::updateButtons();
     IO::updateLEDs();
+
+    // If queued update => send it if it's time ; DON'T REFRESH FROM SERVER IF UPDATE QUEUED TO BE SENT
 
     if (RequestHandler::shouldRefreshData()) {
         getNewState();
@@ -51,5 +78,6 @@ void loop() {
 
     if (IO::buttonPressedIndex != -1) {
         Serial.println(IO::buttonPressedIndex);
+        handleButtonPress(IO::buttonPressedIndex);
     }
 }
