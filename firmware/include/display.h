@@ -6,31 +6,47 @@
 #include "state.h"
 
 namespace Display {
+    struct Coords { int16_t x, y; };
+
+    enum class TextAnchorX { Left, Right, Middle };
+    enum class TextAnchorY { Top, Middle };
+
+    struct TextAnchors { 
+        TextAnchorX textAnchorX; 
+        TextAnchorY textAnchorY; 
+    };
+
     void initDisplay();
 
-    void displayStartupScreen();
+    void displayFullPage(std::function<void()> drawFn);
 
     void displayPartialPage(int x, int y, int w, int h, std::function<void()> drawFn);
 
-    void displayStartupScreen();
+    Coords writeTextMidLeftAnchor(int16_t leftX, int16_t topY, uint16_t rowHeight, String text, const GFXfont *font, uint16_t maxW = -1);
 
-    void drawCheckbox(int16_t leftX, int16_t topY);
+    Coords writeTextMidTopAnchor(int16_t leftX, int16_t topY, uint16_t rowWidth, String text, const GFXfont *font, uint16_t maxW = -1);
 
-    void writeTextTopLeftAnchor(int16_t leftX, int16_t topY, String text, const GFXfont *font);
+    Coords writeText(int16_t targetX, int16_t targetY, String text, const GFXfont *font, TextAnchors textAnchors = {TextAnchorX::Left,TextAnchorY::Top}, uint16_t maxW = -1);
 
-    void writeTextMidLeftAnchor(int16_t leftX, int16_t midY, String text, const GFXfont *font);
+    Coords drawHeader(State& state, int16_t x, int16_t y);
 
-    void writeTextMidLeftAnchor(int16_t leftX, int16_t topY, uint16_t rowHeight, String text, const GFXfont *font);
+    Coords drawSubHeader(State& state, int16_t x, int16_t y);
 
-    void setCursorPositionsFromTextBounds(int16_t leftX, int16_t targetY, String text, bool anchorMidY = false, bool anchorMidX = false);
+    String getButtonStr(int btnIndex);
 
-    void drawTask(Task& task);
+    void drawSpecialButtons(State& state, int16_t x, int16_t y);
 
-    void drawHeader(State& state, int16_t x, int16_t y);
+    void drawIcon(int16_t x, int16_t y, const uint8_t *bitmap, int btnIndex = -1);
 
+    Coords drawTaskListHeader(int16_t x, int16_t y);
+
+    Coords drawCheckbox(int16_t leftX, int16_t topY);
+    
     void drawTaskCheckboxAsCompleted(Task& task);
 
-    void drawTaskListHeader(int16_t x, int16_t y);
+    Coords drawTask(Task& task);
+
+    void displayStartupScreen();
 
     void displayUpdateTaskCompletionStatus(Task& task);
 

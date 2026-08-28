@@ -4,8 +4,11 @@
 #include <Arduino.h>
 #include "Fonts/FreeMonoBold24pt7b.h"
 #include "Fonts/FreeMono18pt7b.h"
+#include "Fonts/FreeMonoBold12pt7b.h"
 #include "Fonts/FreeMono12pt7b.h"
 #include "Fonts/FreeMono9pt7b.h"
+#include "Assets/FreeMono7pt7b.h"
+#include "Assets/Icons.h"
 
 namespace Config {
     // BUTTONS
@@ -42,19 +45,36 @@ namespace Config {
 
     // FONTS
     const GFXfont* const titleFont = &FreeMonoBold24pt7b;
+    const GFXfont* const boldHeaderFont = &FreeMonoBold12pt7b;
     const GFXfont* const headerFont = &FreeMono12pt7b;
     const GFXfont* const bodyFont = &FreeMono12pt7b;
     const GFXfont* const smallFont = &FreeMono9pt7b;
+    const GFXfont* const tinyFont = &FreeMono7pt7b;
 
     // NETWORK
     constexpr int minBetweenRefreshes = 10;
 
     // DISPLAY SIZES
-    constexpr int sectionSpacing = 20;
+    constexpr int titleOffsetX = 5;
+    constexpr int titleOffsetY = 5;
+    constexpr int titleRowSpacingX = 15;
+    constexpr int titleSubtitleSpacing = 5;
+    constexpr int iconSpacingX = 10;
+    constexpr int iconLabelSpacing = 5;
+    constexpr int iconOffsetRightX = 20;
+    constexpr int iconOffsetY = 40;
+    constexpr int buttonStrCheckboxSpacingX = 5;
+    constexpr int maxTaskLabelWidth = 210;
+    constexpr int taskDetailsOffsetX = 270;
+    constexpr int iconSize = 16;
+    constexpr int screenWidth = 400;
+    constexpr int sectionSpacing = 30;
     constexpr int taskRowSpacing = 10;
     constexpr int checkboxSize = 20;
-    constexpr int horizontalSpacing = 10;
-    constexpr int rowLeftX = 25;
+    constexpr int checkboxLabelSpacingX = 10;
+    constexpr int taskOffsetX = 25;
+    constexpr int checkmarkMainOffset = 5;
+    constexpr int checkmarkMinorOffset = 3;
 }
 
 #endif

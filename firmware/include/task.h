@@ -17,6 +17,7 @@ struct Task {
     // Display
     int xStartCoord;
     int yStartCoord;
+    int btnIndex;
     
     // Status
     int statusCode;

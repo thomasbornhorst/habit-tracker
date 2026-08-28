@@ -76,7 +76,7 @@ stateRouter.get('/state', async (_, res) => {
   res.json({
     name: 'Thomas Bornhorst',
     date: localDayLongStr(),
-    weather: 'Weather...',
+    weather: 'High: 79 | Precip: 15%',
     timestampUTC: DateTime.now().toUTC().toSeconds(),
     tasks: result,
   });

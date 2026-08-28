@@ -30,6 +30,7 @@ struct State {
         int i = 0;
         for (; i < numTasksToShow; i++) {
             buttonBindings[i] = ButtonBinding(ButtonAction::ToggleTask, i);
+            tasks[i].btnIndex = i;
         }
         for (; i < Config::maxTasksToShow; i++) {
             buttonBindings[i] = ButtonBinding(ButtonAction::None);
@@ -37,27 +38,6 @@ struct State {
         buttonBindings[Config::nextPageButtonIndex] = ButtonBinding(ButtonAction::NextPage);
         buttonBindings[Config::refreshDisplayButtonIndex] = ButtonBinding(ButtonAction::RefreshDisplay);
         buttonBindings[Config::refreshDataButtonIndex] = ButtonBinding(ButtonAction::RefreshData);
-    }
-
-    void handleButtonPress(int buttonPressIndex) {
-        ButtonBinding btnBinding = buttonBindings[buttonPressIndex];
-        switch (btnBinding.action) {
-            case ButtonAction::ToggleTask:
-                toggleTask(btnBinding.taskIndex);
-                break;
-            case ButtonAction::NextPage:
-                break;
-            case ButtonAction::RefreshDisplay:
-                break;
-            case ButtonAction::RefreshData:
-                break;
-            default: break;
-        }
-    }
-
-    void toggleTask(int taskIndex) {
-        Serial.println("TOGGLE TASK");
-        Serial.println(taskIndex);
     }
 };
 
