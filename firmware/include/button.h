@@ -14,10 +14,18 @@ struct Button {
 
     explicit Button(uint8_t pin) : pin(pin) {}
 
+    /**
+     * @brief Initialize button pin
+     * 
+     */
     void init() {
         pinMode(pin, INPUT_PULLUP);
     }
 
+    /**
+     * @brief Update button state based on current reading
+     * 
+     */
     void update() {
         bool newReading = (digitalRead(pin) == LOW);
 
@@ -37,11 +45,23 @@ struct Button {
         }
     }
 
-    bool isPressed() {
+    /**
+     * @brief Get current status of if the button is pressed or not
+     * 
+     * @return True if button is pressed.
+     * @return False otherwise
+     */
+    bool isPressed() const {
         return currentlyPressed;
     }
 
-    bool isNewlyPressed() {
+    /**
+     * @brief Get current status of if the button newly has a status of pressed
+     * 
+     * @return True if considered pressed in this update, but was not pressed in last update.
+     * @return False otherwise
+     */
+    bool isNewlyPressed() const {
         return (!previouslyPressed && currentlyPressed);
     }
 };

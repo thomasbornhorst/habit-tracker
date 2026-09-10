@@ -55,7 +55,6 @@ namespace Display {
         return writeText(midX, topY, text, font, {TextAnchorX::Middle, TextAnchorY::Top}, maxW);
     }
 
-    // default: anchors top left
     Coords writeText(int16_t targetX, int16_t targetY, String text, const GFXfont *font, TextAnchors textAnchors, uint16_t maxW) {
         int16_t x1, y1;
         uint16_t w, h;
@@ -103,8 +102,6 @@ namespace Display {
         return { static_cast<int16_t>(cursorX + w), cursorY };
     }
 
-    // input: top left coords
-    // output: bottom right coords
     Coords drawHeader(State& state, int16_t x, int16_t y) {
         Coords coords = writeText(x, y, "Tasks!", Config::boldHeaderFont);
 
@@ -130,7 +127,6 @@ namespace Display {
         }
     }
 
-    // input: top left coords of rightmost button
     void drawSpecialButtons(State& state, int16_t x, int16_t y) {
         drawIcon(x, y, refreshIconBitmap, Config::refreshDataButtonIndex);
 
@@ -212,6 +208,18 @@ namespace Display {
             display.setFont(Config::headerFont);
             display.setCursor(50, 200);
             display.print("Loading content");
+        });
+    }
+
+    void displayNoContentErrorScreen() {
+        displayFullPage([&]() {
+            display.setFont(Config::titleFont);
+            display.setCursor(50, 100);
+            display.print("WELCOME!");
+            
+            display.setFont(Config::headerFont);
+            display.setCursor(50, 200);
+            display.print("Error loading content. Will automatically retry again later. Press " + getButtonStr(Config::refreshDataButtonIndex) + " to retry now.");
         });
     }
 

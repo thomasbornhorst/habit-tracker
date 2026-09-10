@@ -2,7 +2,6 @@
 #define TASK_H
 
 #include "Arduino.h"
-#include "ArduinoJson.h"
 
 enum class CadenceType { Daily, Rolling, Decay, Weekly, Unknown };
 
@@ -26,7 +25,12 @@ struct Task {
     String lastCompDateStr; // for non-weekly
     int numCompsForWeek; // for weekly
 
-    String getTaskDetailsString() {
+    /**
+     * @brief Get string for the details of the task
+     * 
+     * @return String of details for the task (e.g. "Last: 11/23")
+     */
+    String getTaskDetailsString() const {
         if (cadenceType == CadenceType::Daily) {
             return getLastCompletedString();
         } else if (cadenceType == CadenceType::Rolling) {
@@ -40,7 +44,12 @@ struct Task {
         return "";
     }
 
-    String getLastCompletedString() {
+    /**
+     * @brief Get string for the details of the last completed date of the task 
+     * 
+     * @return String of last completed date (e.g. "Last 11/23")
+     */
+    String getLastCompletedString() const {
         if (lastCompDateStr == "null") {
             return "Last: N/A";
         }

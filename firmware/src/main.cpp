@@ -7,22 +7,38 @@
 
 State mainState;
 
+/**
+ * @brief Quickly flash Green LED to notify of a success
+ * 
+ */
 void flashGreenStatus() {
     IO::greenLED.turnOn();
     delay(100);
     IO::greenLED.turnOff();
 }
 
-void getNewState() {
+/**
+ * @brief Retrieve the current state from the network.
+ * If successful, rebuild button mappings and re-display the new state
+ * 
+ */
+void getNewState(bool showErrorOnFailure = false) {
     IO::redLED.turnOn();
     if (RequestHandler::getState(mainState)) {
         flashGreenStatus();
         mainState.rebuildButtons();
         Display::displayStateScreen(mainState);
-    };
+    } else if (showErrorOnFailure) {
+        mainState.rebuildButtons();
+        Display::displayNoContentErrorScreen();
+    }
     IO::redLED.turnOff();
 }
 
+/**
+ * @brief Main setup function run at micro-controller startup
+ * 
+ */
 void setup() {
     Serial.begin(115200);
 
@@ -36,11 +52,16 @@ void setup() {
         flashGreenStatus();
     }
 
-    getNewState();
+    getNewState(true);
 
     IO::redLED.turnOff();
 }
 
+/**
+ * @brief Given the index of a button press, runs the appropriate actions
+ * 
+ * @param buttonPressIndex Array index of the button that was pressed
+ */
 void handleButtonPress(int buttonPressIndex) {
     IO::redLED.turnOn();
     ButtonBinding btnBinding = mainState.buttonBindings[buttonPressIndex];
@@ -71,13 +92,17 @@ void handleButtonPress(int buttonPressIndex) {
             Display::displayStateScreen(mainState);
             break;
         case ButtonAction::RefreshData:
-            getNewState();
+            getNewState(!mainState.dateString);
             break;
         default: break;
     }
     IO::redLED.turnOff();
 }
 
+/**
+ * @brief Main loop function for micro-controller
+ * 
+ */
 void loop() {
     IO::updateButtons();
     IO::updateLEDs();

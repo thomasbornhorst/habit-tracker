@@ -20,6 +20,11 @@ struct State {
 
     explicit State() {}
 
+    /**
+     * @brief Rebuild button mappings based on the current state. 
+     * Set each index of buttonBindings to a ButtonAction
+     * 
+     */
     void rebuildButtons() {
         int numTasksToShow = tasks.size();
         if (numTasksToShow > Config::maxTasksToShow) {
