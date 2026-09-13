@@ -21,6 +21,7 @@ void flashGreenStatus() {
  * @brief Retrieve the current state from the network.
  * If successful, rebuild button mappings and re-display the new state
  * 
+ * @param showErrorOnFailure If true, show error screen if failed to get new state. Defaults to false
  */
 void getNewState(bool showErrorOnFailure = false) {
     IO::redLED.turnOn();

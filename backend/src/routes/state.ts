@@ -5,14 +5,8 @@ import {
   getThisWeeksTaskEvents,
 } from '../db/queries';
 import { evaluateNonWeeklyState, evaluateWeeklyState } from '../services/task-status-handler';
-import {
-  startOfLocalDayInUTC,
-  localDayISO,
-  startOfLocalWeekInUTC,
-  startOfLocalWeekISO,
-  localDayLongStr,
-} from '../services/date-handler';
-import { DateTime, ToISODateOptions } from 'luxon';
+import { localDayISO, startOfLocalWeekISO, localDayLongStr } from '../services/date-handler';
+import { DateTime } from 'luxon';
 
 export const stateRouter = Router();
 
@@ -44,6 +38,7 @@ stateRouter.get('/state', async (_, res) => {
     if (cadenceType == 'weekly_quota') {
       const events = weeklyTaskEvents.filter((e) => e.taskId == row.tasks.id);
       status = evaluateWeeklyState(row.task_cadence_versions, events, currentIntendedLocalDate);
+
       numCompletionsThisWeek = events.length;
       if (numCompletionsThisWeek > 0) {
         eventId = events.find((e) => e.intendedLocalDate == currentIntendedLocalDate)?.id;
@@ -51,6 +46,7 @@ stateRouter.get('/state', async (_, res) => {
     } else {
       const event = mostRecentTaskEvents.find((e) => e.taskId == row.tasks.id);
       status = evaluateNonWeeklyState(row.task_cadence_versions, event, currentIntendedLocalDate);
+
       if (event != null) {
         if (event.intendedLocalDate == currentIntendedLocalDate) {
           //TODO: return last completed date string for event before today's

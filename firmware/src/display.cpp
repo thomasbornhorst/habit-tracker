@@ -218,8 +218,14 @@ namespace Display {
             display.print("WELCOME!");
             
             display.setFont(Config::headerFont);
+            display.setCursor(50, 150);
+            display.print("Error loading content.");
+
+            display.setFont(Config::smallFont);
+            display.setCursor(50, 175);
+            display.print("Will retry again later.");
             display.setCursor(50, 200);
-            display.print("Error loading content. Will automatically retry again later. Press " + getButtonStr(Config::refreshDataButtonIndex) + " to retry now.");
+            display.print("Press " + getButtonStr(Config::refreshDataButtonIndex) + " to retry now.");
         });
     }
 

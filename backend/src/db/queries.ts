@@ -45,7 +45,7 @@ export async function getThisWeeksTaskEvents(taskIds: number[], startOfWeek: str
     .from(taskEvents)
     .where(
       and(
-        inArray(taskEvents.id, taskIds),
+        inArray(taskEvents.taskId, taskIds),
         gte(taskEvents.intendedLocalDate, startOfWeek),
         eq(taskEvents.status, 'completed'),
         isNull(taskEvents.voidedAt),

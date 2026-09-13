@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text, primaryKey, foreignKey } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text, check, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 export const TASK_APIS = [
@@ -26,39 +26,58 @@ export const tasks = sqliteTable('tasks', {
   archivedAt: integer('archived_at', { mode: 'timestamp' }),
 });
 
-export const taskEvents = sqliteTable('task_events', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  taskId: integer('task_id')
-    .references(() => tasks.id)
-    .notNull(),
-  loggedAt: integer('logged_at', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  intendedLocalDate: text('intended_local_date').notNull(),
-  status: text('status', { enum: EVENT_STATUSES }).notNull(),
-  source: text('source', { enum: EVENT_SOURCES }).notNull(),
-  voidedAt: integer('voided_at', { mode: 'timestamp' }),
-  voidedSource: text('voided_source', { enum: VOID_SOURCES }),
-});
+export const taskEvents = sqliteTable(
+  'task_events',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    taskId: integer('task_id')
+      .references(() => tasks.id)
+      .notNull(),
+    loggedAt: integer('logged_at', { mode: 'timestamp' })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    intendedLocalDate: text('intended_local_date').notNull(),
+    status: text('status', { enum: EVENT_STATUSES }).notNull(),
+    source: text('source', { enum: EVENT_SOURCES }).notNull(),
+    voidedAt: integer('voided_at', { mode: 'timestamp' }),
+    voidedSource: text('voided_source', { enum: VOID_SOURCES }),
+  },
+  (table) => [
+    // can't have two (non-voided) events for same taskID for same intendedLocalDate
+    uniqueIndex('ux_task_events_daily_completions')
+      .on(table.taskId, table.intendedLocalDate)
+      .where(sql`${table.voidedAt} IS NULL`),
+  ],
+);
 
-// INDEX?: (taskId, intendedLocalDate, status, voidedAt)
-// CONSTRAINT: if cadence type of weekly/rolling/decay => require cadence value
-// CONSTRAINT: can't have two completed (non-voided) events for same taskID for same intendedLocalDate
-
-export const taskCadenceVersions = sqliteTable('task_cadence_versions', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  taskId: integer('task_id')
-    .references(() => tasks.id)
-    .notNull(),
-  cadenceType: text('cadence_type', {
-    enum: CADENCE_TYPES,
-  }).notNull(),
-  cadenceValue: integer('cadence_value'),
-  effectiveFrom: integer('effective_from', { mode: 'timestamp' })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  effectiveTo: integer('effective_to', { mode: 'timestamp' }),
-});
+export const taskCadenceVersions = sqliteTable(
+  'task_cadence_versions',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    taskId: integer('task_id')
+      .references(() => tasks.id)
+      .notNull(),
+    cadenceType: text('cadence_type', {
+      enum: CADENCE_TYPES,
+    }).notNull(),
+    cadenceValue: integer('cadence_value'),
+    effectiveFrom: integer('effective_from', { mode: 'timestamp' })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    effectiveTo: integer('effective_to', { mode: 'timestamp' }),
+  },
+  (table) => [
+    // if cadence type of weekly/rolling/decay => require cadence value
+    check(
+      'check_cadence_version_has_value',
+      sql`${table.cadenceType} = 'daily' OR ${table.cadenceValue} IS NOT NULL`,
+    ),
+    // only one active cadence version per task
+    uniqueIndex('ux_active_cadence_version')
+      .on(table.taskId)
+      .where(sql`${table.effectiveTo} IS NULL`),
+  ],
+);
 
 export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;

@@ -55,24 +55,28 @@ namespace Config {
     constexpr int minBetweenRefreshes = 10;
 
     // DISPLAY SIZES
+    constexpr int screenWidth = 400;
+    constexpr int sectionSpacing = 30;
+    // title
     constexpr int titleOffsetX = 5;
     constexpr int titleOffsetY = 5;
     constexpr int titleRowSpacingX = 15;
     constexpr int titleSubtitleSpacing = 5;
+    // icon / button
     constexpr int iconSpacingX = 10;
     constexpr int iconLabelSpacing = 5;
     constexpr int iconOffsetRightX = 20;
     constexpr int iconOffsetY = 40;
+    constexpr int iconSize = 16;
     constexpr int buttonStrCheckboxSpacingX = 5;
+    // task
     constexpr int maxTaskLabelWidth = 210;
     constexpr int taskDetailsOffsetX = 270;
-    constexpr int iconSize = 16;
-    constexpr int screenWidth = 400;
-    constexpr int sectionSpacing = 30;
     constexpr int taskRowSpacing = 10;
+    constexpr int taskOffsetX = 25;
+    // checkbox
     constexpr int checkboxSize = 20;
     constexpr int checkboxLabelSpacingX = 10;
-    constexpr int taskOffsetX = 25;
     constexpr int checkmarkMainOffset = 5;
     constexpr int checkmarkMinorOffset = 3;
 }
