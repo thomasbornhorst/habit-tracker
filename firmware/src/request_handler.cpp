@@ -101,10 +101,18 @@ namespace RequestHandler {
     }
 
     bool sendTaskCompletion(Task& task) {
-        JsonDocument doc;
-        doc["taskId"] = task.id;
-        doc["source"] = "board-display";
-        return Network::sendPostToServer("/api/events", doc);
+        JsonDocument reqDoc, resDoc;
+        reqDoc["taskId"] = task.id;
+        reqDoc["source"] = "board-display";
+
+        bool ok;
+        ok = Network::sendPostToServer("/api/events", reqDoc, resDoc);
+
+        if (ok) {
+            task.eventId = resDoc["eventId"];
+        }
+        
+        return ok;
     }
 
     bool sendTaskEventVoid(Task& task) {

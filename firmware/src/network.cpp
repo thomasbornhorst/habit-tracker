@@ -52,13 +52,13 @@ namespace Network {
         return ok;
     }
 
-    bool sendPostToServer(String apiRoute, const JsonDocument& doc) {
+    bool sendPostToServer(String apiRoute, const JsonDocument& reqDoc, JsonDocument& resDoc) {
         if (!isNetworkConnected() && !connectToNetwork(1500)) {
             return false;
         }
 
         String requestBody;
-        serializeJson(doc, requestBody);
+        serializeJson(reqDoc, requestBody);
 
         HTTPClient http;
         http.begin(String(BACKEND_BASE) + apiRoute);
@@ -70,7 +70,13 @@ namespace Network {
         int code = http.POST(requestBody);
 
         if (code == 201) {
-            ok = true;
+            DeserializationError err = deserializeJson(resDoc, http.getStream());
+
+            if (err) {
+                Serial.printf("JSON parse failed. Error: %s\n", err.c_str());
+            } else {
+                ok = true;
+            }
         } else {
             Serial.printf("Request failed. Code: %d\n", code);
         }

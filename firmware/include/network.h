@@ -36,11 +36,12 @@ namespace Network {
      * @brief Send a POST request to the server with a defined apiRoute and JSON body
      * 
      * @param apiRoute API route on server (e.g. api/ping)
-     * @param doc JSON body document to send in request
+     * @param reqDoc JSON body document to send in request
+     * @param resDoc JSON body document retrieved in response
      * @return True if successful.
      * @return False otherwise
      */
-    bool sendPostToServer(String apiRoute, const JsonDocument& doc);
+    bool sendPostToServer(String apiRoute, const JsonDocument& reqDoc, JsonDocument& resDoc);
 
     /**
      * @brief Send a PATCH request to the server with a defined apiRoute and JSON body
