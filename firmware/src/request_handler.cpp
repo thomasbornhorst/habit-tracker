@@ -111,6 +111,6 @@ namespace RequestHandler {
         JsonDocument doc;
         doc["taskId"] = task.id;
         doc["source"] = "board-display";
-        return Network::sendPatchToServer("/api/events/:" + String(task.eventId) + "/void", doc);
+        return Network::sendPatchToServer("/api/events/" + String(task.eventId) + "/void", doc);
     }
 }

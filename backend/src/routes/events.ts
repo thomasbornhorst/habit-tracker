@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { EVENT_SOURCES, EVENT_STATUSES, NEW_EVENT_STATUSES, TaskEvent } from '../db/schema';
+import {
+  EVENT_SOURCES,
+  EVENT_STATUSES,
+  NEW_EVENT_STATUSES,
+  TaskEvent,
+  VOID_SOURCES,
+} from '../db/schema';
 import { db } from '../db';
 import { taskEvents, tasks } from '../db/schema';
 import { z } from 'zod';
@@ -66,4 +72,54 @@ eventsRouter.post('/events', async (req, res) => {
     .returning({ eventId: taskEvents.id });
 
   res.status(201).json(event);
+});
+
+const patchEventVoidBodySchema = z.object({
+  taskId: z.number().int().positive().optional(),
+  source: z.enum(VOID_SOURCES),
+  loggedAt: z.number().int().positive().optional(),
+  intendedLocalDate: z.iso.date().optional(),
+});
+
+const patchEventVoidParamsSchema = z.object({
+  eventId: z.coerce.number().int().positive(),
+});
+
+eventsRouter.patch('/events/:eventId/void', async (req, res) => {
+  // Parse request
+  const parsedReq = patchEventVoidBodySchema.safeParse(req.body);
+  const parsedReqParams = patchEventVoidParamsSchema.safeParse(req.params);
+
+  if (!parsedReq.success) {
+    return res
+      .status(400)
+      .json({ error: 'invalid_body', details: z.flattenError(parsedReq.error) });
+  }
+
+  if (!parsedReqParams.success) {
+    return res
+      .status(400)
+      .json({ error: 'invalid_event_id', details: z.flattenError(parsedReqParams.error) });
+  }
+
+  const { source } = parsedReq.data;
+  const { eventId } = parsedReqParams.data;
+
+  // Check validity of event
+  const [taskEvent] = await db.select().from(taskEvents).where(eq(taskEvents.id, eventId));
+  if (!taskEvent) {
+    return res.status(404).json({ error: 'task_event_not_found' });
+  }
+  if (taskEvent.voidedAt != null) {
+    return res.status(409).json({ error: 'task_already_voided' });
+  }
+
+  // Perform update
+  // Ideally, should wrap in transaction with check above to make sure race condition wouldn't affect this
+  await db
+    .update(taskEvents)
+    .set({ voidedAt: DateTime.now().toUTC().toJSDate(), voidedSource: source })
+    .where(eq(taskEvents.id, eventId));
+
+  res.status(201).json();
 });

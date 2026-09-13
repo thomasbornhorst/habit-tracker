@@ -46,7 +46,7 @@ export const taskEvents = sqliteTable(
     // can't have two (non-voided) events for same taskID for same intendedLocalDate
     uniqueIndex('ux_task_events_daily_completions')
       .on(table.taskId, table.intendedLocalDate)
-      .where(sql`${table.voidedAt} IS NULL`),
+      .where(sql`voided_at IS NULL`),
   ],
 );
 
@@ -70,12 +70,12 @@ export const taskCadenceVersions = sqliteTable(
     // if cadence type of weekly/rolling/decay => require cadence value
     check(
       'check_cadence_version_has_value',
-      sql`${table.cadenceType} = 'daily' OR ${table.cadenceValue} IS NOT NULL`,
+      sql`cadence_type = 'daily' OR cadence_value IS NOT NULL`,
     ),
     // only one active cadence version per task
     uniqueIndex('ux_active_cadence_version')
       .on(table.taskId)
-      .where(sql`${table.effectiveTo} IS NULL`),
+      .where(sql`effective_to IS NULL`),
   ],
 );
 

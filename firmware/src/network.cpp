@@ -79,7 +79,6 @@ namespace Network {
         return ok;
     }
 
-    //TODO: Implement
     bool sendPatchToServer(String apiRoute, const JsonDocument& doc) {
         if (!isNetworkConnected() && !connectToNetwork(1500)) {
             return false;
