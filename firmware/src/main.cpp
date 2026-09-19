@@ -108,7 +108,7 @@ void loop() {
     IO::updateButtons();
     IO::updateLEDs();
 
-    // If queued update => send it if it's time ; DON'T REFRESH FROM SERVER IF UPDATE QUEUED TO BE SENT
+    // TODO once queued actions is added: If queued update => send it if it's time ; DON'T REFRESH FROM SERVER IF UPDATE QUEUED TO BE SENT
 
     if (RequestHandler::shouldRefreshData()) {
         getNewState();

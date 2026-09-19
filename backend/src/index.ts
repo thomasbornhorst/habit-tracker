@@ -1,15 +1,7 @@
-import express from 'express';
-import { pingRouter } from './routes/ping';
-import { stateRouter } from './routes/state';
-import { eventsRouter } from './routes/events';
+import 'dotenv/config';
+import { CreateApp } from './app';
 
-require('dotenv').config();
+const app = CreateApp();
+const port = process.env.PORT ?? 3001;
 
-const app = express();
-app.use(express.json());
-
-app.use('/api', pingRouter);
-app.use('/api', stateRouter);
-app.use('/api', eventsRouter);
-
-app.listen(3000, () => console.log('Backend on :3000'));
+app.listen(port, () => console.log(`Backend on :${port}`));
