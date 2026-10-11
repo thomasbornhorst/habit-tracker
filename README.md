@@ -2,7 +2,7 @@
 
 In progress...
 
-Currently: Hardware code is mostly done and working, could you use a little cleaning up. Database is in fairly complete working state. Backend needs some cleaning up, added documentation, and unit testing. Backend also needs middleware (logger, error handling, express-rate-limit, auth). Frontend is in minimal state. This README needs to be updated with more complete information.
+Currently: Hardware code is mostly done and working, could use a little cleaning up. Database is in fairly complete working state. Backend needs some cleaning up, added documentation, and unit testing. Backend also needs middleware (logger, error handling, express-rate-limit, auth). Frontend is in minimal state. This README needs to be updated with more complete information.
 
 ## Summary
 
@@ -13,8 +13,6 @@ Design decisions based on existing academic research.
 E-paper display with microcontroller
 
 React + Express + SQLite Website
-
-link to website
 
 ## Demo
 
